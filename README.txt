@@ -32,27 +32,15 @@ Simply choose another campaign in Settings > Pardot Settings and click 'Save Set
 Since every WordPress theme is different, embedded forms won’t always automatically fit. You’ll want to make a Pardot Layout Template specifically for your WordPress theme:
 
 1. Go to <a href="https://pi.pardot.com/form" target="_blank">Forms</a> in Pardot. Find and edit the form that needs updating.
-1. Click ahead to the ‘Look and Feel’ step of the wizard and select the ‘Styles’ tab.
-1. Set ‘Label Alignment’ to ‘Above’ and click ‘Confirm and Save.’.
+1. Click ahead to the 'Look and Feel' step of the wizard and select the 'Styles' tab.
+1. Set 'Label Alignment' to 'Above' and click 'Confirm and Save.'.
 1. Click the link to the layout template being used by the form.
 1. Edit the layout template and add the following to the <head> section of the template:
-`<!DOCTYPE html>
-<html>
-	<head>
-		<base href="http://www2.pardot.com" >
-		<meta charset="utf-8"/>
-		<meta name="description" content="%%description%%"/>
-		<title>%%title%%</title>
-		<style type="text/css">
-			#pardot-form input.text, #pardot-form textarea {
-				width: 150px;
-			}
-		</style>
-	</head>
-	<body>
-		%%content%%
-	</body>
-</html>`
+`<style type="text/css">
+	#pardot-form input.text, #pardot-form textarea {
+		width: 150px;
+	}
+</style>`
 
 A width of 150px is just a starting point. Adjust this value until it fits on your page.
 
