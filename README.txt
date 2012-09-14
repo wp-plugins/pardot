@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -44,6 +44,10 @@ Since every WordPress theme is different, embedded forms won’t always automati
 
 A width of 150px is just a starting point. Adjust this value until it fits on your page and add additional styles as you see fit. For styling help, reference our <a href="http://www.pardot.com/help/faqs/forms/basic-css-for-forms" target="_blank">Basic CSS for Forms</a> page.
 
+= I just added a form, and it's not showing up in WordPress yet. =
+
+Go to Settings > Pardot Settings and click 'Save Settings'. This should reinitialize and update your Pardot content.
+
 == Screenshots ==
 
 1. Settings area
@@ -55,9 +59,12 @@ A width of 150px is just a starting point. Adjust this value until it fits on yo
 
 == Changelog ==
 
+= 1.0.3 =
+Added form caching for faster rendering and less requests
+
 = 1.0.2 =
-Fix a caching issue that was causing the most recently-used form to render on all posts/pages
-Extended API cache timeout
+1. Fix a caching issue that was causing the most recently-used form to render on all posts/pages
+1. Extended API cache timeout
 
 = 1.0.1 =
 Fix bug with form order in content
