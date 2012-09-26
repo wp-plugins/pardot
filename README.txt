@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.0.3
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,6 +22,24 @@ Say hello to marketing automation simplicity! With a single login, your self-hos
 1. Select your campaign (for tracking code usage).
 
 == Frequently Asked Questions ==
+
+= How can I use the shortcodes without the Visual Editor? =
+
+Two simple shortcodes are available for use.
+
+== Form Shortcode ==
+
+`[pardot-form id="{Form ID}" title="{Form Name}"]`
+
+Use `[pardot-form]` with at least the `id` parameter. You can also include the `title` parameter that is included when using the toolbar button, but it's not required for display. For instance, `[pardot-form id="1" title="Title"]` renders my Pardot form with an ID of 1.
+
+== Dynamic Content Shortcode ==
+
+`[pardot-dynamic-content id="{Dynamic Content ID}" default="{Non-JavaScript Content}"]`
+
+Use `[pardot-dynamic-content]` with at least the `id` parameter.
+
+The `default` parameter is used for accessibility. Whatever is placed here is wrapped in `<noscript>` tags and is shown to users who have JavaScript disabled. In most cases, you should use whatever you're using as your default content in the Dynamic Content itself. So, `[pardot-dynamic-content id="1" default="My default content."]` would render something like: `<script type="text/javascript" src="http://go.pardot.com/dcjs/99999/99/dc.js"></script><noscript>My default content.</noscript>`, which would show the dynamic content to users with JavaScript enabled, and 'My default content' to users with it disabled.
 
 = How do I change my campaign? =
 
@@ -44,9 +62,9 @@ Since every WordPress theme is different, embedded forms won’t always automati
 
 A width of 150px is just a starting point. Adjust this value until it fits on your page and add additional styles as you see fit. For styling help, reference our <a href="http://www.pardot.com/help/faqs/forms/basic-css-for-forms" target="_blank">Basic CSS for Forms</a> page.
 
-= I just added a form, and it's not showing up in WordPress yet. =
+= I just added a form or dynamic content, and it's not showing up to select it yet. =
 
-Go to Settings > Pardot Settings and click 'Save Settings'. This should reinitialize and update your Pardot content.
+Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitialize and update your Pardot content.
 
 == Screenshots ==
 
@@ -54,10 +72,16 @@ Go to Settings > Pardot Settings and click 'Save Settings'. This should reinitia
 1. Pardot button in the Visual Editor toolbar
 1. Choose from any form
 1. Use forms in a widget
+1. Use dynamic content in a widget
 1. A form widget (with corrected styling)
 1. A page can have two forms! Here, one is in the body and one in a widget.
 
 == Changelog ==
+
+= 1.1.0 =
+1. Added dynamic content shortcodes
+1. Added title field to form widget
+1. Added 'Reset Cache' option
 
 = 1.0.3 =
 Added form caching for faster rendering and less requests

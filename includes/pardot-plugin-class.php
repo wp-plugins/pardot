@@ -5,6 +5,7 @@
  * Includes:
  *  - Automatic Javascript in the theme footer
  * 	- [pardot-form] Shortcode
+ *  - [pardot-dynamic-content] Shortcode
  *  - Caching support
  *  - Call and retrieve values from the Pardot API
  *  - Hooks to support the Pardot Forms Shortcode Insert button for TinyMCE
@@ -95,7 +96,12 @@ class Pardot_Plugin {
 		/**
 		 * 	Create the shortcode [pardot-form]
 		 */
-		add_shortcode( 'pardot-form', array( $this, 'shortcode' ) );
+		add_shortcode( 'pardot-form', array( $this, 'form_shortcode' ) );
+		
+		/**
+		 * 	Create the shortcode [pardot-dynamic-content]
+		 */
+		add_shortcode( 'pardot-dynamic-content', array( $this, 'dynamic_content_shortcode' ) );
 
 		/**
 		 * Add 'Settings' link on plugin list page and add TinyMCE button for post editor.
@@ -106,6 +112,11 @@ class Pardot_Plugin {
 		 * Listen for AJAX post back for the form's shortcode selector.
 		 */
 		add_action( 'wp_ajax_get_pardot_forms_shortcode_select_html', array( $this, 'wp_ajax_get_pardot_forms_shortcode_select_html' ) );
+		
+		/**
+		 * Listen for AJAX post back for the dynamic content's shortcode selector.
+		 */
+		add_action( 'wp_ajax_get_pardot_dynamicContent_shortcode_select_html', array( $this, 'wp_ajax_get_pardot_dynamicContent_shortcode_select_html' ) );
 	}
 
 	/**
@@ -130,7 +141,7 @@ class Pardot_Plugin {
 			 * Grab the HTML that contains a <select> which lets the user select a Pardot Form
 			 * for which it insert a shortcode for that form into the TinyMCE editing space.
 			 */
-			$html = $this->get_forms_shortcode_select_html( 'shortcode', $forms );
+			$html = $this->get_forms_shortcode_select_html( 'formshortcode', $forms );
 
 		} else {
 
@@ -173,6 +184,72 @@ class Pardot_Plugin {
 		 */
 		die();
 	}
+	
+	/**
+	 * AJAX function used to return the list of Pardot dynamic content for the current accounts selected campaign.
+	 *
+	 * @since 1.1.0
+	 */
+	function wp_ajax_get_pardot_dynamicContent_shortcode_select_html() {
+		/**
+		 * Use the API or the cache to retrieve an array of Pardot dynamicContents
+		 */
+		$dynamicContents = self::get_dynamicContent();
+
+		/**
+		 * Do we have Pardot dynamicContents?
+		 */
+		if ( ! empty( $dynamicContents ) ) {
+						
+			/**
+			 * YES, we have Pardot dynamicContents! :-)
+			 *
+			 * Grab the HTML that contains a <select> which lets the user select a Pardot dynamicContent
+			 * for which it insert a shortcode for that dynamicContent into the TinyMCE editing space.
+			 */
+			$lmth = $this->get_dynamicContents_shortcode_select_html( 'dcshortcode', $dynamicContents );
+
+		} else {
+		
+			/**
+			 * No, we have no Pardot dynamicContents today. :-(
+			 *
+			 * Grab the URL where users can define dynamicContents on Pardot's website and
+			 * put into a variable that can be embedded in a string.
+			 */
+			$dynamicContents_url = Pardot_Settings::DYNAMIC_CONTENT_URL;
+
+			/**
+			 * Grab link text so it can be translated seperately.
+			 */
+			$link_text = __( 'create one', 'pardot' );
+
+			/**
+			 * Assemble the link for where Pardot dynamicContents can be defined.
+			 */
+			$page_link = "<a target=\"_blank\" href=\"{$dynamicContents_url}\">{$link_text}</a>";
+
+			/**
+			 * Assemble the link for where Pardot dynamicContents can be defined.
+			 */
+			$error_msg = __( 'It looks like you don\'t have any Dynamic Content set up yet. Please %s.', 'pardot' );
+
+			/**
+			 * Insert the link into the error message.
+			 */
+			$lmth = sprintf( $error_msg, $page_link );
+		}
+
+		/**
+		 * Output either <select> with Pardot dynamicContents as <options>, or an error message with instructions to add Pardot dynamicContents.
+		 */
+		echo $lmth;
+
+		/**
+		 * And we're done.  Don't fall through and let WordPress echo a '0'.
+		 */
+		die();
+	}
 
 	/**
 	 * Assemble <select> element for selected Pardot Forms.
@@ -202,6 +279,8 @@ class Pardot_Plugin {
 		 */
 		$html[] = "<select id=\"{$select_id}\" name=\"{$select_name}\">";
 
+		$html[] = "<option value=\"0\">Select</option>";
+		
 		/**
 		 * For each Pardot Form
 		 */
@@ -219,6 +298,54 @@ class Pardot_Plugin {
 		return implode( '', $html );
 
 	}
+	
+	/**
+	 * Assemble <select> element for selected Pardot dynamicContents.
+	 *
+	 * The <option> value will be the WordPress [pardot-dynamic-content] shortcode to insert into TinyMCE
+	 *
+	 * @param string $select_name The HTML name for the <select> element
+	 * @param array $dynamicContents The array for Pardot dynamicContents returned dynamicContent the Pardot API.
+	 * @return string The HTML string to display
+	 *
+	 * @since 1.1.0
+	 */
+	function get_dynamicContents_shortcode_select_html( $select_name, $dynamicContents ) {
+
+		/**
+		 * Create an array to capture the HTML output into.
+		 */
+		$lmth = array();
+
+		/**
+		 * Use dashes for HTML IDs instead of underscores.
+		 */
+		$select_id = str_replace( '-', '_', $select_name );
+
+		/**
+		 * Assemble the opening <select> tag.
+		 */
+		$lmth[] = "<select id=\"{$select_id}\" name=\"{$select_name}\">";
+		
+		$lmth[] = "<option value=\"0\">Select</option>";
+
+		/**
+		 * For each Pardot dynamicContent
+		 */
+		foreach ( $dynamicContents as $dynamicContent ) {
+			/**
+			 * Assemble an option where the value is the WordPress [pardot-dynamic-content] shortcode to insert into TinyMCE
+			 */
+			$lmth[] = "<option value=\"[pardot-dynamic-content id=&quot;{$dynamicContent->id}&quot;\">{$dynamicContent->name}</option>";
+		}
+		$lmth[] = '</select>';
+
+		/**
+		 * Compact the array of HTML into a string of HTML and return it.
+		 */
+		return implode( '', $lmth );
+
+	}	
 
 	/**
 	 * Load the text domain for language translation after the plugin is loaded.
@@ -377,7 +504,7 @@ class Pardot_Plugin {
 	 *
 	 * @since 1.0.0
 	 */
-	function shortcode( $atts ) {
+	function form_shortcode( $atts ) {
 		/**
 		 * Translate from 'id' to 'form_id' which is what $this->get_form_body() uses.
 		 */
@@ -387,6 +514,30 @@ class Pardot_Plugin {
 		 * Output the Pardot form
 		 */
 		return self::get_form_body( $atts );
+	}
+	
+	/**
+	 * Register the shortcode [pardot-dynamic-content ...]
+	 *
+	 * @param array $atts Contains shortcode attributes provided by the user. Expect 'id' for Dyanamic Content ID.
+	 *
+	 * @since 1.1.0
+	 */
+	function dynamic_content_shortcode( $atts ) {
+		/**
+		 * Translate from 'id' to 'dynamicContent_id' which is what $this->get_dynamic_content_body() uses.
+		 */
+		$atts['dynamicContent_id'] = isset( $atts['id'] ) ? $atts['id'] : 0;
+		
+		/**
+		 * Give a default to wrap in <noscript> for accesibility.
+		 */
+		$atts['dynamicContent_default'] = isset( $atts['default'] ) ? $atts['default'] : '';
+
+		/**
+		 * Output the Pardot form
+		 */
+		return self::get_dynamic_content_body( $atts );
 	}
 
 	/**
@@ -582,6 +733,53 @@ class Pardot_Plugin {
 	}
 
 	/**
+	 * Grab the HTML for the Pardot Dynamic Content to be displayed via a widget or via a shortcode.
+	 *
+	 * @static
+	 * @param array $args Contains 'dynamicContent_id'
+	 * @return bool|string
+	 *
+	 * @since 1.1.0
+	 */
+	static function get_dynamic_content_body( $args = array() ) {
+		$dynamicContent_html = false;
+		/**
+		 * Grab the dynamicContent_id from the args passed.
+		 */
+		$dynamicContent_id = $args['dynamicContent_id'];
+		$dynamicContent_default = $args['dynamicContent_default'];
+		
+		$dynamicContent_html = get_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id );
+		
+		if ( ! $dynamicContent_html ) {
+		
+			$dynamicContents = get_pardot_dynamic_content();
+
+			if ( isset( $dynamicContents[$dynamicContent_id] ) ) {
+				/**
+				 * Use the dynamicContent_id to find the right one
+				 */
+				$dynamicContent = $dynamicContents[$dynamicContent_id];
+				$dynamicContent_html = $dynamicContent->embedCode;
+			}
+			
+			set_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id, $dynamicContent_html, self::$cache_timeout );
+			
+		}	
+		
+		if ( $dynamicContent_default != '' ) {
+
+			return $dynamicContent_html . "<noscript>" . $dynamicContent_default . "</noscript>";
+			
+		} else {
+			
+			return $dynamicContent_html;
+			
+		}
+	}
+
+
+	/**
 	 * Get an instance of Pardot_API
 	 *
 	 * If API is not instantiated yet, passes $auth array which if empty will retrieve values from self::get_settings().
@@ -632,6 +830,18 @@ class Pardot_Plugin {
 	 */
 	static function get_forms( $args = array() ) {
 		return self::call_api( 'forms', $args );
+	}
+	
+	/**
+	 * Returns array of Dynamic Content as defined by the Pardot API.
+	 *
+	 * @param array $args Combined authorization parameters and query arguments.
+	 * @return array|bool The array of Forms, or false if not authenticated or API error.
+	 *
+	 * @since 1.1.0
+	 */
+	static function get_dynamicContent( $args = array() ) {
+		return self::call_api( 'dynamicContent', $args );
 	}
 
 	/**
