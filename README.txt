@@ -4,15 +4,15 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Integrate Pardot with WordPress: easily track visitors, embed forms in pages and posts or a widget, and use dyanamic content.
+Integrate Pardot with WordPress: easily track visitors, embed forms in pages and posts, or use the forms widget.
 
 == Description ==
 
-Say hello to marketing automation simplicity! With a single login, your self-hosted WordPress installation will be securely connected with Pardot. With the selection of your campaign, you'll be able to track visitors and work with forms without touching a single line of code. You can use the widget to place a form or dynamic content anywhere a sidebar appears, or embed them in a page or post using a shortcode or the Pardot button on the Visual Editor's toolbar.
+Say hello to marketing automation simplicity! With a single login, your self-hosted WordPress installation will be securely connected with Pardot. With the selection of your campaign, you'll be able to track visitors and work with forms without touching a single line of code. You can use the widget to place a form anywhere a sidebar appears, or embed them in a page or post using a shortcode or the Pardot button on the Visual Editor's toolbar.
 
 == Installation ==
 
@@ -27,19 +27,27 @@ Say hello to marketing automation simplicity! With a single login, your self-hos
 
 Two simple shortcodes are available for use.
 
-= Form Shortcode =
+== Form Shortcode ==
 
 `[pardot-form id="{Form ID}" title="{Form Name}"]`
 
 Use `[pardot-form]` with at least the `id` parameter. You can also include the `title` parameter that is included when using the toolbar button, but it's not required for display. For instance, `[pardot-form id="1" title="Title"]` renders my Pardot form with an ID of 1.
 
-= Dynamic Content Shortcode =
+== Dynamic Content Shortcode ==
 
 `[pardot-dynamic-content id="{Dynamic Content ID}" default="{Non-JavaScript Content}"]`
 
 Use `[pardot-dynamic-content]` with at least the `id` parameter.
 
-The `default` parameter is used for accessibility. Whatever is placed here is wrapped in `<noscript>` tags and is shown to users who have JavaScript disabled. In most cases, you should use whatever you're using as your default content in the Dynamic Content itself. So, `[pardot-dynamic-content id="1" default="My default content."]` would render something like: `<script type="text/javascript" src="http://go.pardot.com/dcjs/99999/99/dc.js"></script><noscript>My default content.</noscript>`, which would show the dynamic content to users with JavaScript enabled, and 'My default content' to users with it disabled.
+The `default` parameter is used for accessibility. Whatever is placed here is wrapped in `<noscript>` tags and is shown only to users who have JavaScript disabled. By default, it will automatically be your "Default Content" as designated in Pardot. So, 
+
+`[pardot-dynamic-content id="1" default="My default content."]` 
+
+would render something like:
+
+`<script type="text/javascript" src="http://go.pardot.com/dcjs/99999/99/dc.js"></script><noscript>My default content.</noscript>`
+
+...which would show the dynamic content to users with JavaScript enabled, and 'My default content' to users with it disabled. Note that, due to the way the WordPress Visual Editor works, HTML tags for the parameter will be URL encoded to avoid strange formatting.
 
 = How do I change my campaign? =
 
@@ -70,13 +78,16 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 1. Settings area
 1. Pardot button in the Visual Editor toolbar
-1. Choose from any form or dynamic content
+1. Choose from any form
 1. Use forms in a widget
 1. Use dynamic content in a widget
 1. A form widget (with corrected styling)
 1. A page can have two forms! Here, one is in the body and one in a widget.
 
 == Changelog ==
+
+= 1.1.1 =
+Make `<noscript>` default to Default Pardot Content
 
 = 1.1.0 =
 1. Added dynamic content shortcodes
