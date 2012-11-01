@@ -334,22 +334,34 @@ x	 */
 			return false;
 		}
 
-		if ( ! $this->api_key && 'login' != $item_type )
+		if ( ! $this->api_key && 'login' != $item_type ) {
 			$this->authenticate( $args );
-
+		}	
+									
+		$args = array_merge( $args, 
+			array( 
+				'user_key' => $this->user_key,
+				'api_key' => $this->api_key 
+			)
+		);		
+				
 		$http_response = wp_remote_request(
 			$this->_get_url( $item_type, $args ),
 			array_merge( array(
 				'timeout' 		=> '30',
-				'redirection' => '5',
-				'method' 			=> 'POST',
+				'redirection'   => '5',
+				'method' 		=> 'POST',
 				'blocking'		=> true,
 				'compress'		=> false,
 				'decompress'	=> true,
 				'sslverify' 	=> false,
+				'body'          => $args
 			), $args )
 		);
-
+				
+		$args['email'] = urlencode( $args['email'] );
+		$args['password'] = urlencode( $args['password'] );
+				
 		$response = false;
 		if( wp_remote_retrieve_response_code( $http_response ) == 200 ) {
 			$response = new SimpleXMLElement( wp_remote_retrieve_body( $http_response ) );
@@ -399,7 +411,7 @@ x	 */
 	 * @return array containing email, password and user_key elements.
 	 *
 	 * @since 1.0.0
-x	 */
+	 */
 	function get_auth() {
 		return array(
 			'email' => $this->email,
@@ -425,14 +437,14 @@ x	 */
 		if ( 'login' == $item_type ) {
 			$this->set_auth( $args );
 			$base_url = str_replace( '%%VERSION%%', self::VERSION, self::$LOGIN_URL_PATH_TEMPLATE );
-			$url = "{$base_url}?email={$this->email}&password={$this->password}&user_key={$this->user_key}";
+			$url = $base_url;
 		} else {
 			$base_url = str_replace(
 				array( '%%VERSION%%', '%%ITEM_TYPE%%', '%%ACTION%%' ),
 				array( self::VERSION, $item_type, 'account' == $item_type ? 'read' : 'query' ),
 				self::$URL_PATH_TEMPLATE
 			);
-			$url = "{$base_url}?user_key={$this->user_key}&api_key={$this->api_key}";
+			$url = $base_url;
 		}
 		return self::ROOT_URL . $url;
 	}

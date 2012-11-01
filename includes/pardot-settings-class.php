@@ -313,7 +313,7 @@ HTML;
 	 * @since 1.0.0
 	 */
 	function sanitize_fields( $dirty ) {
-
+	
 		/**
 		 * Nothing passed? Then nothing to sanitize.
 		 */
@@ -329,6 +329,13 @@ HTML;
 		$clean = self::get_empty_settings();
 
 		if ( isset( $_POST['reset'] ) ) {
+			global $wpdb;
+			$collecttrans = $wpdb->get_col( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_pardot%';" );
+			
+			foreach ( $collecttrans as $collecttran ) {
+				delete_transient(str_replace('_transient_', '', $collecttran));
+			}
+			
 			add_settings_error( self::$OPTION_GROUP, 'reset_settings', __( 'Settings have been reset!', 'pardot' ), 'updated' );
 			return $clean;
 		}
@@ -348,7 +355,7 @@ HTML;
 		 */
 		foreach( $clean as $name => $value )
 			if ( isset( $dirty[$name] ) )
-				$clean[$name] = esc_attr( $dirty[$name] );
+				$clean[$name] = trim( esc_attr( $dirty[$name] ) );
 
 		/**
 		 * Call the Pardot API to attempt to authenticate
@@ -475,13 +482,20 @@ HTML;
 		 */
 		unset( $new_options['submit'] );
 		unset( $new_options['reset'] );
+		
+		/**
+		 * Trim whitespace
+		 */
+		$new_options['email'] = trim( $new_options['email'] );
+		$new_options['password'] = trim( $new_options['password'] );
+		$new_options['user_key'] = trim( $new_options['user_key'] );
 
 		/**
 		 * Add 'prying eyes' encryption for passsword.
 		 * Base64 won't stop a hacker if they get access to the database but will keep
 		 * endusers from being able to see a valid password.
 		 */
-		$new_options['password'] = base64_encode( $new_options['password'] );
+		$new_options['password'] = self::pardot_encrypt( $new_options['password'], 'pardot_key' );
 
 		return $new_options;
 	}
@@ -699,6 +713,30 @@ HTML;
 HTML;
 		echo $html;
 	}
+	
+	/**
+	 * Encrypts with a bit more complexity
+	 *
+	 * @since 1.1.2
+	 */
+	function pardot_encrypt($input_string, $key='pardot_key'){
+		$iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+		$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+		$h_key = hash('sha256', $key, TRUE);
+		return base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $h_key, $input_string, MCRYPT_MODE_ECB, $iv));
+	}
+	
+	/**
+	 * Decrypts with a bit more complexity
+	 *
+	 * @since 1.1.2
+	 */
+	function pardot_decrypt($encrypted_input_string, $key='pardot_key'){
+	    $iv_size = mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB);
+	    $iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+	    $h_key = hash('sha256', $key, TRUE);
+	    return trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $h_key, base64_decode($encrypted_input_string), MCRYPT_MODE_ECB, $iv));
+	}
 
 	/**
 	 * Return list of Pardot plugin settings
@@ -729,7 +767,7 @@ HTML;
 			 * If there was infothere's nothing in the database make sure all
 			 * expected setting keys are in returned array.
 			 */
-			$settings['password'] = base64_decode( $settings['password'] );
+			$settings['password'] = self::pardot_decrypt( $settings['password'], 'pardot_key' );
 
 		}
 
@@ -779,7 +817,7 @@ HTML;
 		/**
 		 * Encode password for 'prying eyes' security
 		 */
-		$settings['password'] = base64_encode( $settings['password'] );
+		$settings['password'] = self::pardot_encrypt( $settings['password'], 'pardot_key' );
 
 		/**
 		 * Now update all the settings as a serialized array
