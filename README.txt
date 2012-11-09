@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,10 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 == Changelog ==
 
+= 1.1.3 =
+
+Checks for mcrypt and falls back safely if not (fixes blank admin screen bug)
+
 = 1.1.2 =
 
 1. Clear cache when resetting all settings
@@ -114,6 +118,10 @@ Fix bug with form order in content
 Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.3 =
+
+Fixes blank admin screen bug (by checking for mcrypt and falling back safely if not)
 
 = 1.1.2 =
 
