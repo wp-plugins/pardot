@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.4.1
-Stable tag: 1.1.3
+Stable tag: 1.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,12 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 == Changelog ==
 
+= 1.1.4 =
+
+1. Fix TinyMCE modal bug when no forms or dynamic content is present
+1. Support for 200+ forms and dynamic content items
+1. Other minor checks
+
 = 1.1.3 =
 
 Checks for mcrypt and falls back safely if not (fixes blank admin screen bug)
@@ -118,6 +124,12 @@ Fix bug with form order in content
 Initial release.
 
 == Upgrade Notice ==
+
+= 1.1.4 =
+
+1. Fix TinyMCE modal bug when no forms or dynamic content is present
+1. Support for 200+ forms and dynamic content items
+1. Other minor checks
 
 = 1.1.3 =
 

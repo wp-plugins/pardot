@@ -160,7 +160,9 @@ class Pardot_API {
 			$campaigns = array();
 			for( $i = 0; $i < $response->result->total_results; $i++ ) {
 				$campaign = (object)$response->result->campaign[$i];
-				$campaigns[(int)$campaign->id] = $this->SimpleXMLElement_to_stdClass( $campaign );
+				if ( isset($campaign->id) ) {
+					$campaigns[(int)$campaign->id] = $this->SimpleXMLElement_to_stdClass( $campaign );
+				}	
 			}
 		}
 		return $campaigns;
@@ -200,11 +202,29 @@ class Pardot_API {
 	function get_forms( $args = array() ) {
 		$forms = false;
 		if ( $response = $this->get_response( 'form', $args ) ) {
+			
 			$forms = array();
-			for( $i = 0; $i < $response->result->total_results; $i++ ) {
-				$form = $response->result->form[$i];
-				$forms[(int)$form->id] = $this->SimpleXMLElement_to_stdClass( $form );
+			
+			if ( $response->result->total_results >= 200 ) {
+				$limit = 200;
+			} else {
+				$limit = $response->result->total_results;
 			}
+			
+			for( $i = 0; $i < $limit; $i++ ) {
+				$form = $response->result->form[$i];
+				$forms[(int)$form->id] = $this->SimpleXMLElement_to_stdClass( $form );	
+			}
+			
+			if ( $response->result->total_results >= 200 ) {
+				if ( $response = $this->get_response( 'form', $args, 'result', 2 ) ) {
+					for( $i = 0; $i < ($response->result->total_results-200); $i++ ) {
+						$form = $response->result->form[$i];
+						$forms[(int)$form->id] = $this->SimpleXMLElement_to_stdClass( $form );	
+					}
+				}
+			}
+			
 		};
 		return $forms;
 	}
@@ -223,11 +243,29 @@ class Pardot_API {
 	function get_dynamicContent( $args = array() ) {
 		$dynamicContents = false;
 		if ( $response = $this->get_response( 'dynamicContent', $args ) ) {
+			
 			$dynamicContents = array();
-			for( $i = 0; $i < $response->result->total_results; $i++ ) {
+			
+			if ( $response->result->total_results >= 200 ) {
+				$limit = 200;
+			} else {
+				$limit = $response->result->total_results;
+			}
+			
+			for( $i = 0; $i < $limit; $i++ ) {
 				$dynamicContent = $response->result->dynamicContent[$i];
 				$dynamicContents[(int)$dynamicContent->id] = $this->SimpleXMLElement_to_stdClass( $dynamicContent );
 			}
+			
+			if ( $response->result->total_results >= 200 ) {
+				if ( $response = $this->get_response( 'form', $args, 'result', 2 ) ) {
+					for( $i = 0; $i < ($response->result->total_results-200); $i++ ) {
+						$dynamicContent = $response->result->dynamicContent[$i];
+						$dynamicContents[(int)$dynamicContent->id] = $this->SimpleXMLElement_to_stdClass( $dynamicContent );	
+					}
+				}
+			}
+			
 		};
 		return $dynamicContents;
 	}
@@ -326,7 +364,7 @@ x	 */
 	 *
 	 * @since 1.0.0
 	 */
-	function get_response( $item_type, $args = array(), $property = 'result' ) {
+	function get_response( $item_type, $args = array(), $property = 'result', $paged=1 ) {
 		$this->error = false;
 
 		if ( ! $this->has_auth() ) {
@@ -341,7 +379,10 @@ x	 */
 		$args = array_merge( $args, 
 			array( 
 				'user_key' => $this->user_key,
-				'api_key' => $this->api_key 
+				'api_key' => $this->api_key,
+				// Here for Pardot root-level debugging only
+				//'act_as_user' => 'user@example.com',
+				'offset' => $paged > 1 ? ($paged-1)*200 : 0
 			)
 		);		
 				
@@ -358,9 +399,14 @@ x	 */
 				'body'          => $args
 			), $args )
 		);
-				
-		$args['email'] = urlencode( $args['email'] );
-		$args['password'] = urlencode( $args['password'] );
+		
+		if ( isset($args['email']) ) {	
+			$args['email'] = urlencode( $args['email'] );
+		}
+		
+		if ( isset($args['password']) ) {	
+			$args['password'] = urlencode( $args['password'] );
+		}
 				
 		$response = false;
 		if( wp_remote_retrieve_response_code( $http_response ) == 200 ) {
