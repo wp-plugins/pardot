@@ -69,7 +69,20 @@ var PardotShortcodePopup = {
 	init:function() {},
 	insert:function() {
 		if ( ( jQuery('#formshortcode').length != 0 ) && ( jQuery('#formshortcode').val() != '0' ) ) {
-			tinyMCEPopup.editor.execCommand('mceInsertContent',false,jQuery('#formshortcode').val());
+			var formval = jQuery('#formshortcode').val();
+			var formheight = jQuery('#formh').val();
+			if ( formheight ) {
+				formval = formval.replace('pardot-form', 'pardot-form height="'+formheight+'"')
+			}
+			var formwidth = jQuery('#formw').val();
+			if ( formwidth ) {
+				formval = formval.replace('pardot-form', 'pardot-form width="'+formwidth+'"')
+			}
+			var formclass = jQuery('#formc').val();
+			if ( formclass ) {
+				formval = formval.replace('pardot-form', 'pardot-form class="'+formclass+'"')
+			}
+			tinyMCEPopup.editor.execCommand('mceInsertContent',false,formval);
 		}
 		if ( ( jQuery('#dcshortcode').length != 0 ) && ( jQuery('#dcshortcode').val() != '0' ) ) {
 			tinyMCEPopup.editor.execCommand('mceInsertContent',false,jQuery('#dcshortcode').val());
@@ -152,6 +165,10 @@ HTML;
 		 */
 		$formsec = __( 'Forms', 'pardot' );
 		$labelform = __( 'Select a form to insert', 'pardot' );
+		$formcust = __( 'Optional iframe Parameters', 'pardot' );
+		$labelformh = __( 'Height', 'pardot' );
+		$labelformw = __( 'Width', 'pardot' );
+		$labelformc = __( 'Class', 'pardot' );
 		$dcsec = __( 'Dynamic Content', 'pardot' );
 		$labeldc = __( 'Select dynamic content to insert', 'pardot' );
 		$labeldcalt = __( 'Default content to show JS-disabled users', 'pardot' );
@@ -175,6 +192,15 @@ HTML;
 			<img class="spinner" src="{$spinner_url}" height="16" weight="16" alt="Time waits for no man.">
 		</span>
 		<br clear="all" />
+		<h4>{$formcust}</h4>
+		<label for="formh">{$labelformh}</label>:
+		<input type="text" size="6" id="formh" name="formh" />
+		<label for="formw">{$labelformw}</label>:
+		<input type="text" size="6" id="formw" name="formw" />
+		<label for="formc">{$labelformc}</label>:
+		<input type="text" id="formc" name="formc"/>
+		<br clear="all" />
+		<br />
 		<h2>{$dcsec}</h2>
 		<label for="shortcode-dc">{$labeldc}</label>:
 		<span id="pardot-dc-shortcode-select">
