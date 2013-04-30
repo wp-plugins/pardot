@@ -40,7 +40,9 @@ class _Pardot_Forms_Shortcode_Popup {
 #pardot-forms-shortcode-popup {padding:10px 20px 0 10px;width:376px;}
 #pardot-forms-shortcode-popup	#pardot-forms-shortcode-insert-dialog {font-size:1.15em;}
 #pardot-forms-shortcode-popup h1 {font-size:1.5em;margin-bottom:0.5em;}
-#pardot-forms-shortcode-popup .mceActionPanel {text-align:center;margin-top:20px;}
+#pardot-forms-shortcode-popup p {margin:5px 0;clear:both;}
+#pardot-forms-shortcode-popup p.well {padding:5px;background:#ccc;}
+#pardot-forms-shortcode-popup .mceActionPanel {text-align:center;margin:10px 0;}
 #pardot-forms-shortcode-select .spinner {vertical-align:-3px;}
 #pardot-forms-shortcode-select #formshortcode, #pardot-dc-shortcode-select #dcshortcode {font-size:1em;max-width:100%;float:left;}
 #shortcode-dc-input {width:70%;padding:3px 0;}
@@ -85,7 +87,20 @@ var PardotShortcodePopup = {
 			tinyMCEPopup.editor.execCommand('mceInsertContent',false,formval);
 		}
 		if ( ( jQuery('#dcshortcode').length != 0 ) && ( jQuery('#dcshortcode').val() != '0' ) ) {
-			tinyMCEPopup.editor.execCommand('mceInsertContent',false,jQuery('#dcshortcode').val());
+		    var dcval = jQuery('#dcshortcode').val();
+			var dcheight = jQuery('#dch').val();
+			if ( dcheight ) {
+				dcval = dcval.replace('pardot-dynamic-content', 'pardot-dynamic-content height="'+dcheight+'"')
+			}
+			var dcwidth = jQuery('#dcw').val();
+			if ( dcwidth ) {
+				dcval = dcval.replace('pardot-dynamic-content', 'pardot-dynamic-content width="'+dcwidth+'"')
+			}
+			var dcclass = jQuery('#dcc').val();
+			if ( dcclass ) {
+				dcval = dcval.replace('pardot-dynamic-content', 'pardot-dynamic-content class="'+dcclass+'"')
+			}
+			tinyMCEPopup.editor.execCommand('mceInsertContent',false,dcval);
 		}
 		tinyMCEPopup.close();
 	}
@@ -166,15 +181,21 @@ HTML;
 		$formsec = __( 'Forms', 'pardot' );
 		$labelform = __( 'Select a form to insert', 'pardot' );
 		$formcust = __( 'Optional iframe Parameters', 'pardot' );
+        $dccust = __( 'Optional iframe Parameters', 'pardot' );
 		$labelformh = __( 'Height', 'pardot' );
 		$labelformw = __( 'Width', 'pardot' );
 		$labelformc = __( 'Class', 'pardot' );
+        $labeldch = __( 'Height', 'pardot' );
+        $labeldcw = __( 'Width', 'pardot' );
+        $labeldcc = __( 'Class', 'pardot' );
 		$dcsec = __( 'Dynamic Content', 'pardot' );
 		$labeldc = __( 'Select dynamic content to insert', 'pardot' );
-		$labeldcalt = __( 'Default content to show JS-disabled users', 'pardot' );
+		//$labeldcalt = __( 'Default content to show JS-disabled users', 'pardot' );
 		$cache_text = __( '<strong>Not seeing something you added recently in Pardot?</strong> Please click the Clear Cache button on the %s.', 'pardot' );
 		$cache_link = sprintf( '<a href="%s" target="_parent">%s</a>', $pardot_settings_url, 'Pardot Settings Page' );
 		$cache_text = sprintf( $cache_text, $cache_link );
+        $formparam_text = __( 'Height and width should be in digits only (i.e. 250).', 'pardot' );
+        $dcparam_text = __( 'Height and width should be in px or % (i.e. 250px or 90%).', 'pardot' );
 		/**
 		 * Use HEREDOC to make the form's HTML much more easy to understand.
 		 *
@@ -193,6 +214,7 @@ HTML;
 		</span>
 		<br clear="all" />
 		<h4>{$formcust}</h4>
+		<p><small>{$formparam_text}</small></p>
 		<label for="formh">{$labelformh}</label>:
 		<input type="text" size="6" id="formh" name="formh" />
 		<label for="formw">{$labelformw}</label>:
@@ -207,6 +229,15 @@ HTML;
 			<input type="hidden" id="shortcodedc">
 			<img class="spinner" src="{$spinner_url}" height="16" weight="16" alt="Time waits for no man.">
 		</span>
+		<br clear="all" />
+		<h4>{$dccust}</h4>
+	    <p><small>{$dcparam_text}</small></p>
+		<label for="dch">{$labeldch}</label>:
+		<input type="text" size="6" id="dch" name="dch" />
+		<label for="dcw">{$labeldcw}</label>:
+		<input type="text" size="6" id="dcw" name="dcw" />
+		<label for="dcc">{$labeldcc}</label>:
+		<input type="text" id="dcc" name="dcc"/>
 	</div>
 	<div class="mceActionPanel">
 		<span class="insert-button">
@@ -220,8 +251,7 @@ HTML;
 			<input type="submit" id="cancel" name="cancel" value="{#cancel}" class="button-secondary" onclick="tinyMCEPopup.close();" />
 		</span>
 	</div>
-	<br clear="all" />
-	<p><small>{$cache_text}</small></p>
+	<p class="well"><small>{$cache_text}</small></p>
 </form>
 </div>
 <script type="text/javascript">

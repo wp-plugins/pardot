@@ -517,6 +517,7 @@ class Pardot_Plugin {
 	 * @since 1.0.0
 	 */
 	function wp_footer() {
+        pardot_dc_async_script();
 		the_pardot_tracking_js();
 	}
 
@@ -547,7 +548,7 @@ class Pardot_Plugin {
 	 * @since 1.1.0
 	 */
 	function dynamic_content_shortcode( $atts ) {
-		/**
+        /**
 		 * Translate from 'id' to 'dynamicContent_id' which is what $this->get_dynamic_content_body() uses.
 		 */
 		$atts['dynamicContent_id'] = isset( $atts['id'] ) ? $atts['id'] : 0;
@@ -836,10 +837,8 @@ class Pardot_Plugin {
 		 * Grab the dynamicContent_id from the args passed.
 		 */
 		$dynamicContent_id = $args['dynamicContent_id'];
-		
-		$dynamicContent_html = get_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id );
-		
-		if ( ! $dynamicContent_html ) {
+
+        if ( false === ( $dynamicContent_html = get_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id ) ) ) {
 		
 			$dynamicContents = get_pardot_dynamic_content();
 
@@ -849,12 +848,36 @@ class Pardot_Plugin {
 				 */
 				$dynamicContent = $dynamicContents[$dynamicContent_id];
 				$dynamicContent_html = $dynamicContent->embedCode;
+                $dynamicContent_url = $dynamicContent->embedUrl;
 				$dynamicContent_default = $dynamicContent->baseContent;
 			}
+
+            if ( $dynamicContent_url ) {
+                $dynamicContent_html = "<div data-dc-url='" . $dynamicContent_url . "' style='height:auto;width:auto;' class='pardotdc'>" . $dynamicContent_default . "</div>";
+            } else {
+                $dynamicContent_html = $dynamicContent_html . "<noscript>" . $dynamicContent_default . "</noscript>";
+            }
+
+			set_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id, $dynamicContent_html, self::$cache_timeout );
 			
-			set_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id, $dynamicContent_html . "<noscript>" . $dynamicContent_default . "</noscript>", self::$cache_timeout );
-			
-		}	
+		} else {
+
+            $dynamicContent_html = get_transient( 'pardot_dynamicContent_html_' . $dynamicContent_id );
+
+        }
+
+        if ( ! empty( $args['height'] ) ) {
+            /**
+             * If 'inline' add to the <div> using style
+             */
+            $dynamicContent_html = str_replace( 'height:auto', "height:{$args['height']}", $dynamicContent_html );
+        }
+        if ( ! empty( $args['width'] ) ) {
+            $dynamicContent_html = str_replace( 'width:auto', "width:{$args['width']}", $dynamicContent_html );
+        }
+        if ( ! empty( $args['class'] ) ) {
+            $dynamicContent_html = str_replace( 'pardotdc', "pardotdc {$args['class']}", $dynamicContent_html );
+        }
 									
 		return $dynamicContent_html;
 			
@@ -1028,4 +1051,3 @@ class Pardot_Plugin {
  * This instantiation can only be done once (see it's __construct() to understand why.)
  */
 new Pardot_Plugin();
-

@@ -414,7 +414,12 @@ HTML;
 			 */
 			$help_text = __( 'If some of your form is cut off or the styling isn\'t quite right, please read our %s.', 'pardot' );
 			$help_text = sprintf( $help_text, $help_link );
-			
+
+            /**
+             * Create a variable for parameters helper text.
+             */
+            $param_text = __( 'Height and width should be in digits only (i.e. 250).', 'pardot' );
+
 			/**
 			 * Create link to Settings Page
 			 */
@@ -439,8 +444,8 @@ HTML;
 		
 		$html .= '<p><label for="' . $this->get_field_id( "title" ) . '">' . __( 'Title:' ) . '</label><input class="widefat" id="' . $this->get_field_id( "title" ) . '" name="' . $this->get_field_name( "title" ) . '" type="text" value="' . esc_attr( $title ) . '" /></p>';
 		
-		$html .= '<p><strong>Optional iframe Parameters</strong></p>';
-		
+		$html .= '<p><strong>Optional Parameters</strong><br/><small>' . $param_text . '</small></p>';
+
 		if ( isset( $instance[ 'height' ] ) ) {
 			$height = $instance[ 'height' ];
 		} else {
@@ -456,7 +461,7 @@ HTML;
 		}
 		
 		$html .= '<label for="' . $this->get_field_id( "width" ) . '">' . __( 'Width:' ) . '</label><input id="' . $this->get_field_id( "width" ) . '" name="' . $this->get_field_name( "width" ) . '" type="text" value="' . esc_attr( $width ) . '" size="6" /></p>';
-		
+
 		if ( isset( $instance[ 'class' ] ) ) {
 			$class = $instance[ 'class' ];
 		} else {
@@ -611,6 +616,9 @@ class Pardot_Dynamic_Content_Widget extends WP_Widget {
 		 */
 		$body_html = Pardot_Plugin::get_dynamic_content_body( $instance );
 
+        wp_register_script( 'pddc', plugins_url( 'js/asyncdc.min.js' , dirname(__FILE__) ), 'jquery', false, true);
+        wp_enqueue_script( 'pddc' );
+
 		/**
 		 * After all that if the $body_html is not empty, we can use it as a form.
 		 */
@@ -666,6 +674,9 @@ HTML;
 			$instance['dynamicContent_id'] = $new_instance['dynamicContent_id'];
 		
 		$instance['title'] = strip_tags( $new_instance['title'] );
+        $instance['height'] = strip_tags( $new_instance['height'] );
+        $instance['width'] = strip_tags( $new_instance['width'] );
+        $instance['class'] = strip_tags( $new_instance['class'] );
 		
 		return $instance;
 	}
@@ -779,12 +790,16 @@ HTML;
 			$cache_link = sprintf( '<a href="%s" target="_parent">%s</a>', $pardot_settings_url, 'Pardot Settings Page' );
 			$cache_text = sprintf( $cache_text, $cache_link );
 
+            /**
+             * Create a variable for parameters helper text.
+             */
+            $param_text = __( 'Height and width should be in px or % (i.e. 250px or 90%).', 'pardot' );
+
 			/**
 			 * Create the HTML for displaying the select of Pardot forms
 			 */
 			$html = <<<HTML
 <p><label for="{$html_id}">{$prompt}</label><select id="{$html_id}" name="{$html_name}" style="max-width:100%">{$options}</select></p>
-<p><small>{$cache_text}</small></p>
 HTML;
 		}
 		
@@ -795,6 +810,34 @@ HTML;
 		}
 		
 		$html .= '<p><label for="' . $this->get_field_id( "title" ) . '">' . __( 'Title:' ) . '</label><input class="widefat" id="' . $this->get_field_id( "title" ) . '" name="' . $this->get_field_name( "title" ) . '" type="text" value="' . esc_attr( $title ) . '" /></p>';
+
+        $html .= '<p><strong>Optional Parameters</strong><br/><small>' . $param_text . '</small></p>';
+
+        if ( isset( $instance[ 'height' ] ) ) {
+            $height = $instance[ 'height' ];
+        } else {
+            $height = __( '', 'text_domain' );
+        }
+
+        $html .= '<p><label for="' . $this->get_field_id( "height" ) . '">' . __( 'Height:' ) . '</label><input id="' . $this->get_field_id( "height" ) . '" name="' . $this->get_field_name( "height" ) . '" type="text" value="' . esc_attr( $height ) . '" size="6" />';
+
+        if ( isset( $instance[ 'width' ] ) ) {
+            $width = $instance[ 'width' ];
+        } else {
+            $width = __( '', 'text_domain' );
+        }
+
+        $html .= '<label for="' . $this->get_field_id( "width" ) . '">' . __( 'Width:' ) . '</label><input id="' . $this->get_field_id( "width" ) . '" name="' . $this->get_field_name( "width" ) . '" type="text" value="' . esc_attr( $width ) . '" size="6" /></p>';
+
+        if ( isset( $instance[ 'class' ] ) ) {
+            $class = $instance[ 'class' ];
+        } else {
+            $class = __( '', 'text_domain' );
+        }
+
+        $html .= '<p><label for="' . $this->get_field_id( "class" ) . '">' . __( 'Class:' ) . '</label><input class="widefat" id="' . $this->get_field_id( "class" ) . '" name="' . $this->get_field_name( "class" ) . '" type="text" value="' . esc_attr( $class ) . '" /></p>';
+
+        $html .= '<p><small>' . $cache_text . '</small></p>';
 
 		/**
 		 * Display whatever HTML is appropriate; error message help or list of forms.
