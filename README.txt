@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, dynamic content, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.6
-Stable tag: 1.3.1
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -98,6 +98,10 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 = 1.3.1 =
 
+Fixed a bug with `shortcode_exists` fatal error
+
+= 1.3.1 =
+
 Fixed a bug with `has_shortcode` fatal error
 
 = 1.3 =
@@ -155,9 +159,9 @@ Initial release.
 
 == Upgrade Notice ==
 
-= 1.3.1 =
+= 1.3.2 =
 
-1.3.1 fixes a bug with `has_shortcode` fatal error; with today's 1.3 update: load multiple pieces of Dynamic Content without a performance hit with our new asynchronous loading technique!
+1.3.2 fixes two fatal error bugs that were showing on install. With today's overall 1.3 update, you can now load multiple pieces of Dynamic Content without a performance hit with our new asynchronous loading technique!
 
 = 1.3 =
 
