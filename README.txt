@@ -159,7 +159,7 @@ Initial release.
 
 = 1.3 =
 
-Load multiple pieces of Dynamic Content without a performance hit with our new asynchronous loading technique!
+Load multiple pieces of Dynamic Content without a performance hit with our new asynchronous loading technique! Go to Settings > Pardot Settings and click "Clear Cache" to update your existing pieces of dynamic content.
 
 = 1.2 =
 
