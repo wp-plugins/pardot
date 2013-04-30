@@ -96,7 +96,7 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 == Changelog ==
 
-= 1.3.1 =
+= 1.3.2 =
 
 Fixed a bug with `shortcode_exists` fatal error
 
