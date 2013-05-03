@@ -96,6 +96,7 @@ function get_pardot_tracking_js() {
 			$html =<<<HTML
 <script type="text/javascript">
 <!--
+piCId = '{$campaign}';
 {$tracking_code_template}
 -->
 </script>

@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, dynamic content, tracking, web tracking
 Requires at least: 3.4
 Tested up to: 3.6
-Stable tag: 1.3.2
+Stable tag: 1.3.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -96,7 +96,12 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 
 == Changelog ==
 
-= 1.3.2 =
+= 1.3.3 =
+
+1. Accounts for a minor API change in the tracking code
+1. Adds support for 200+ campaigns
+
+= 1.3.1 =
 
 Fixed a bug with `shortcode_exists` fatal error
 
@@ -158,6 +163,10 @@ Fix bug with form order in content
 Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.3 =
+
+Accounts for a minor API change in the tracking code; adds support for 200+ campaigns
 
 = 1.3.2 =
 
