@@ -93,6 +93,7 @@ function get_pardot_tracking_js() {
 		 */
 		$tracking_code_template = str_replace( '%%CAMPAIGN_ID%%', $campaign+1000, $tracking_code_template );
 		if ( $tracking_code_template ) {
+            $campaign = $campaign + 1000;
 			$html =<<<HTML
 <script type="text/javascript">
 <!--
