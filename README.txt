@@ -2,8 +2,8 @@
 Contributors: cliffseal, NewClarity, MikeSchinkel
 Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, dynamic content, tracking, web tracking
-Requires at least: 3.4
-Tested up to: 3.6
+Requires at least: 3.7
+Tested up to: 3.8.1
 Stable tag: 1.3.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
