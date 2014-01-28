@@ -4,7 +4,7 @@ Donate link: http://pardot.com
 Tags: pardot, marketing automation, forms, dynamic content, tracking, web tracking
 Requires at least: 3.7
 Tested up to: 3.8.1
-Stable tag: 1.3.8
+Stable tag: 1.3.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -95,6 +95,10 @@ Go to Settings > Pardot Settings and click 'Reset Cache'. This should reinitiali
 1. A page can have two forms! Here, one is in the body and one in a widget.
 
 == Changelog ==
+
+= 1.3.9 =
+
+Fixes a small bug with a JS library being called in the wrong place
 
 = 1.3.8 =
 
@@ -189,6 +193,10 @@ Fix bug with form order in content
 Initial release.
 
 == Upgrade Notice ==
+
+= 1.3.9 =
+
+This update fixes a bug that caused some Dashboards to act funny.
 
 = 1.3.8 =
 

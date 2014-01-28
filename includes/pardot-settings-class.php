@@ -121,7 +121,6 @@ class Pardot_Settings {
 		 * Enqueue JS for Chosen on Widgets Screen
 		 */
 		add_action( 'admin_enqueue_scripts', array( $this, 'pardot_chosen_enqueue' ) );
-		add_action( 'in_admin_footer', array( $this, 'pardot_chosen_init' ) );
 
 	}
 	/**
@@ -782,6 +781,7 @@ HTML;
 			return;
 		wp_enqueue_script(  'chosen', '//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.min.js', array( 'jquery' ), '1.0' );
 		wp_enqueue_style( 'chosen', '//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.min.css' );
+		add_action( 'in_admin_footer', array( $this, 'pardot_chosen_init' ) );
 	}
 
 	/**
