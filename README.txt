@@ -92,10 +92,7 @@ As of version 1.4, developers can now deal with various directory configurations
 
 To fix it, add a new file called `pardot-custom-wp-load.php` to the `plugins/pardot/includes` directory (this will never be overridden by updates). In that file, define a constant that gives the absolute path to your `wp-load.php` file. For instance:
 
-```
-<?php
-define('PARDOT_WP_LOAD', '/path/to/wp-load.php');
-```
+`define('PARDOT_WP_LOAD', '/path/to/wp-load.php');`
 
 = Filters =
 
@@ -103,26 +100,22 @@ define('PARDOT_WP_LOAD', '/path/to/wp-load.php');
 
 Filter the entire embed code for a given form. A common usage for this is conditionally appending a query string. So, for instance, the following will filter the embed code for form #545 and append an arbitrary parameter along with the post ID of the page being viewed:
 
-```
-function pardot_custom_append_querystring($body_html) {
-	return preg_replace( '/src="([^"]+)"/', 'src="$1?this=that&postID=' . get_the_ID() . '"', $body_html );
-}
-
-add_filter( 'pardot_form_embed_code_54796', 'pardot_custom_append_querystring' );
-```
+	function pardot_custom_append_querystring($body_html) {
+		return preg_replace( '/src="([^"]+)"/', 'src="$1?this=that&postID=' . get_the_ID() . '"', $body_html );
+	}
+	
+	add_filter( 'pardot_form_embed_code_54796', 'pardot_custom_append_querystring' );
 
 You can apply any conditional logic you want. For instance, this will append the same information, but only if you're on the "About" page:
 
-```
-function pardot_custom_append_querystring($body_html) {
-	if ( is_page('About') ) {
-		$body_html = preg_replace( '/src="([^"]+)"/', 'src="$1?this=that&postID=' . get_the_ID() . '"', $body_html );
+	function pardot_custom_append_querystring($body_html) {
+		if ( is_page('About') ) {
+			$body_html = preg_replace( '/src="([^"]+)"/', 'src="$1?this=that&postID=' . get_the_ID() . '"', $body_html );
+		}
+		return $body_html;
 	}
-	return $body_html;
-}
-
-add_filter( 'pardot_form_embed_code_54796', 'pardot_custom_append_querystring' );
-```
+	
+	add_filter( 'pardot_form_embed_code_54796', 'pardot_custom_append_querystring' );
 
 == Screenshots ==
 
